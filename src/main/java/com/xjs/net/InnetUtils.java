@@ -8,4 +8,9 @@ public class InnetUtils {
     public static AddressModel getCurrAddress() {
         return FileUtils.getCurrAddress();
     }
+
+    public static boolean isSelectedMaster() {
+        AddressModel master = FileUtils.getMaster();
+        return null != master;
+    }
 }

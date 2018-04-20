@@ -21,7 +21,6 @@ public class ServerHandler implements Runnable {
 
     public void run() {
         try {
-            socket.setKeepAlive(true);
             InputStream is = socket.getInputStream();
             BufferedReader bufferedReader = 
                     new BufferedReader(new InputStreamReader(is));
@@ -32,36 +31,35 @@ public class ServerHandler implements Runnable {
     }
 
     private void process(String msgLine, Socket socket) {
-        List<String> tuple = Splitter.on(",").splitToList(msgLine);
-        SelectMasterModel selectMasterModel
+        List<String> tuple = Splitter.on(":").splitToList(msgLine);
+        if (tuple.size() < 3) {
+            SocketClient.sendMsg(socket, "HTTP/1.1 200 OK\n\n\n <html>nihao</html>");
+        }
+        SelectMasterModel receiveMsg
                 = SelectMasterModel.create(tuple.get(0), tuple.get(1), Long.parseLong(tuple.get(2)));
-        System.out.println(selectMasterModel);
-        if (Math.abs(selectMasterModel.getTimeClock() - LogiClock.getLogiClock()) <= distanceTimeExpend ) {
-            if (selectMasterModel.getTimeClock() >= LogiClock.getLogiClock()) {
-                LogiClock.setLogiClock(selectMasterModel.getTimeClock());
-                try {
-                    OutputStream os = socket.getOutputStream();
-                    String sender = Joiner.on(":").join(InnetUtils.getCurrAddress().getIp(), InnetUtils.getCurrAddress().getPort());
-                    String master = selectMasterModel.getMaster();
-                    String msg
-                            = Joiner.on(",").join(sender, master, LogiClock.getLogiClock());
-                    os.write(Joiner.on("").join(msg, "\n").getBytes());
-                    os.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        System.out.println(Joiner.on(" ").join(InnetUtils.getCurrAddress(),"reveive", receiveMsg));
+        if (Math.abs(receiveMsg.getTimeClock() - LogiClock.getLogiClock()) <= distanceTimeExpend ) {
+            if (receiveMsg.getTimeClock() >= LogiClock.getLogiClock()) {
+                LogiClock.setLogiClock(receiveMsg.getTimeClock());
+                String sender = Joiner.on(",").join(InnetUtils.getCurrAddress().getIp(), InnetUtils.getCurrAddress().getPort());
+                String master = receiveMsg.getMaster();
+                String msg
+                        = Joiner.on(":").join(sender, master, LogiClock.getLogiClock());
+                System.out.println(Joiner.on(" ").join(InnetUtils.getCurrAddress(),"send", msg));
+                SocketClient.sendMsg(socket, msg);
             } else {
-                try {
-                    OutputStream os = socket.getOutputStream();
-                    String sender = Joiner.on(":").join(InnetUtils.getCurrAddress().getIp(), InnetUtils.getCurrAddress().getPort());
-                    String msg
-                            = Joiner.on(",").join(sender, sender, LogiClock.getLogiClock());
-                    os.write(Joiner.on("").join(msg, "\n").getBytes());
-                    os.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                String sender = Joiner.on(":").join(InnetUtils.getCurrAddress().getIp(), InnetUtils.getCurrAddress().getPort());
+                String msg
+                        = Joiner.on(":").join(sender, sender, LogiClock.getLogiClock());
+                System.out.println(Joiner.on(" ").join(InnetUtils.getCurrAddress(),"send", msg));
+                SocketClient.sendMsg(socket, msg);
             }
+        } else {
+            String sender = Joiner.on(",").join(InnetUtils.getCurrAddress().getIp(), InnetUtils.getCurrAddress().getPort());
+            String msg
+                    = Joiner.on(":").join(sender, sender, LogiClock.getLogiClock());
+            System.out.println(Joiner.on(" ").join(InnetUtils.getCurrAddress(),"send", msg));
+            SocketClient.sendMsg(socket, msg);
         }
     }
 }

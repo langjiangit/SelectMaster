@@ -1,6 +1,7 @@
 package com.xjs.net;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 
@@ -15,11 +16,13 @@ import java.util.Map;
  */
 public class FileUtils {
 
-    private static final String PROPERTIES_FILE = "select_master.prop";
+    private static final String PROPERTIES_FILE = "/Users/xiejisheng/Documents/SelectMaster/src/main/resources/select_master.prop";
     private static final Map<String, AddressModel> machines = Maps.newHashMap();
     private static final String CURR = "curr";
     private static final String OTHER_ONE = "other1";
     private static final String OTHER_TWO = "other2";
+    private static final String SELECTED_MASTER = "selectedMaster";
+
     static {
         File file = new File(PROPERTIES_FILE);
         try {
@@ -38,5 +41,14 @@ public class FileUtils {
 
     public static AddressModel getCurrAddress() {
         return machines.get(CURR);
+    }
+
+    public static List<AddressModel> getOtherAddress() {
+        return ImmutableList.of(machines.get(OTHER_ONE));
+    }
+
+    public static AddressModel getMaster() {
+        AddressModel addressModel = machines.get(SELECTED_MASTER);
+        return addressModel;
     }
 }

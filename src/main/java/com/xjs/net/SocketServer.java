@@ -1,19 +1,33 @@
 package com.xjs.net;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  * Created by xiejisheng on 18/4/20.
  */
-public class SocketServer implements Runnable {
+public class SocketServer {
 
-    public void run() {
+    public static void receive() {
         try {
-            ServerSocket server = new ServerSocket(8121);
+            if (InnetUtils.isSelectedMaster()) {
+                System.exit(0);
+            }
+
+            AddressModel currAddress = InnetUtils.getCurrAddress();
+            ServerSocket server = new ServerSocket(currAddress.getPort());
             if (!Thread.interrupted()) {
                 while (true) {
-                    new Thread(new ServerHandler(server.accept())).run();
+                    try {
+                        Socket accept = server.accept();
+//                    System.out.println("xxxxxx");
+//                    SocketClient.sendMsg(accept, "HTTP/1.1 200 OK\n\n\n <html>nihao</html>");
+                        new ServerHandler(accept).run();
+                    } catch (Throwable t) {
+                        System.out.println(t);
+                    }
                 }
             }
         } catch (IOException e) {
