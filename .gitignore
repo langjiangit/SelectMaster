@@ -1,0 +1,11 @@
+/target/
+.idea/
+SelectMaster.iml
+SelectMaster.ipr
+SelectMaster.iws
+.classpath
+.gitignore.swp
+.project
+.settings/
+logs
+*.DS_Store
