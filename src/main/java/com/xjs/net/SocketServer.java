@@ -28,15 +28,19 @@ public class SocketServer {
                         Socket accept = server.accept();
                         if (QuorumVote.isSuccessVote()) {
                             FileUtils.write(QuorumVote.getMaster().getMaster());
+                            System.out.println(Joiner.on("").join("master节点已选出：", QuorumVote.getMaster().getMaster()));
+                            System.exit(0);
                         }
                         new ServerHandler(accept).run();
                     } catch (Throwable t) {
-                        System.out.println(t);
+                        System.out.println(SocketServer.class.getCanonicalName());
+                        t.printStackTrace();
                     }
                 }
             }
         } catch (Throwable t) {
-            System.out.println(t);
+            System.out.println(SocketServer.class.getCanonicalName());
+            t.printStackTrace();
         }
     }
 }

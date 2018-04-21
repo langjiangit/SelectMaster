@@ -16,6 +16,11 @@ import java.util.concurrent.TimeUnit;
 public class SocketClient {
 
     public static void sendMsg(){
+        String msg = Joiner.on(":").join(InnetUtils.getCurrAddress(), InnetUtils.getCurrAddress(), LogiClock.getLogiClock());
+        doSendMsg(msg);
+    }
+
+    private static void doSendMsg(String msg) {
         List<AddressModel> otherAddress = FileUtils.getOtherAddress();
         for (AddressModel addressModel : otherAddress) {
             Socket socket = null;
@@ -28,30 +33,35 @@ public class SocketClient {
                         TimeUnit.SECONDS.sleep(1);
                         socket.connect(inetSocketAddress);
                     }catch (Throwable t) {
-                        System.out.println(SocketClient.class.getCanonicalName() + t);
+                        System.out.println(SocketClient.class.getCanonicalName());
+                        t.printStackTrace();
                     }
                     System.out.println(Joiner.on("").join(InnetUtils.getCurrAddress(), "尝试与", addressModel, "建立连接"));
                 }
 
                 OutputStream os = socket.getOutputStream();
-                String msg = Joiner.on(":").join(InnetUtils.getCurrAddress(), InnetUtils.getCurrAddress(), LogiClock.getLogiClock());
                 os.write(Joiner.on("").join(msg, "\n").getBytes());
                 os.flush();
             } catch (Throwable t) {
-                System.out.println(t);
+                System.out.println(SocketClient.class.getCanonicalName());
+                t.printStackTrace();
             }
         }
     }
 
+    public static void sendMsg(String msg){
+        doSendMsg(msg);
+    }
+
     public static void sendMsg(Socket socket, String msg) {
-        List<AddressModel> otherAddress = FileUtils.getOtherAddress();
         try {
             OutputStream os = socket.getOutputStream();
             os.write(Joiner.on("").join(msg, "\n").getBytes());
             os.flush();
             os.close();
         } catch (Throwable t) {
-            System.out.println(t);
+            System.out.println(SocketClient.class.getCanonicalName());
+            t.printStackTrace();
         }
     }
 

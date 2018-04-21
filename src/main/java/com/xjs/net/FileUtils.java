@@ -7,7 +7,6 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -19,12 +18,11 @@ import java.util.Map;
  */
 public class FileUtils {
 
-    public static final String MASTER = "master";
     private static final String PROPERTIES_FILE = "select_master.prop";
     private static final Map<String, AddressModel> machines = Maps.newHashMap();
-    private static final String CURR = "curr";
-    private static final String OTHER_ONE = "other1";
-    private static final String OTHER_TWO = "other2";
+    private static final String CURR = "curr_machine";
+    private static final String OTHER_ONE = "other1_machine";
+    private static final String OTHER_TWO = "other2_machine";
     private static final String SELECTED_MASTER = "selectedMaster";
 
     static {
@@ -45,8 +43,9 @@ public class FileUtils {
                         = AddressModel.create(prop.get(1), Integer.parseInt(prop.get(2)));
                 machines.put(key, addressModel);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Throwable t) {
+            System.out.println(FileUtils.class.getCanonicalName());
+            t.printStackTrace();
         }
     }
 
@@ -54,8 +53,18 @@ public class FileUtils {
         return machines.get(CURR);
     }
 
+    public static int getMachinesNum() {
+        int num = 0;
+        for (String each : machines.keySet()) {
+            if (each.contains("machine"))
+                ++num;
+        }
+        return num;
+    }
+
     public static List<AddressModel> getOtherAddress() {
-        return ImmutableList.of(machines.get(OTHER_ONE), machines.get(OTHER_TWO));
+//        return ImmutableList.of(machines.get(OTHER_ONE), machines.get(OTHER_TWO));
+        return ImmutableList.of(machines.get(OTHER_ONE));
     }
 
     public static AddressModel getMaster() {
@@ -68,14 +77,16 @@ public class FileUtils {
         File file = null;
         try {
             file = new File(resourceAsStream.toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
+        } catch (Throwable t) {
+            System.out.println(FileUtils.class.getCanonicalName());
+            t.printStackTrace();
         }
 
         try {
-            Files.append(Joiner.on("").join(MASTER, ":", master), file, Charset.forName("utf8"));
+            Files.append(Joiner.on("").join(SELECTED_MASTER, ":", master, "\r\n"), file, Charset.forName("utf8"));
         } catch (Throwable t) {
-            System.out.println(t);
+            System.out.println(FileUtils.class.getCanonicalName());
+            t.printStackTrace();
         }
     }
 }
