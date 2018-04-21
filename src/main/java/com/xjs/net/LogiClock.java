@@ -5,6 +5,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by xiejisheng on 18/4/20.
+ * 逻辑时钟
+ * 同步各个CPU的逻辑时钟，处理分布式机器各CPU漂移的问题
+ * 收敛
  */
 public class LogiClock implements Runnable{
 

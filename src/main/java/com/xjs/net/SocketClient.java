@@ -50,9 +50,8 @@ public class SocketClient {
             os.write(Joiner.on("").join(msg, "\n").getBytes());
             os.flush();
             os.close();
-//            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Throwable t) {
+            System.out.println(t);
         }
     }
 

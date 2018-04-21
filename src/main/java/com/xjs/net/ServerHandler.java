@@ -37,29 +37,27 @@ public class ServerHandler implements Runnable {
         }
         SelectMasterModel receiveMsg
                 = SelectMasterModel.create(tuple.get(0), tuple.get(1), Long.parseLong(tuple.get(2)));
+
         System.out.println(Joiner.on(" ").join(InnetUtils.getCurrAddress(),"reveive", receiveMsg));
-        if (Math.abs(receiveMsg.getTimeClock() - LogiClock.getLogiClock()) <= distanceTimeExpend ) {
-            if (receiveMsg.getTimeClock() >= LogiClock.getLogiClock()) {
-                LogiClock.setLogiClock(receiveMsg.getTimeClock());
-                String sender = Joiner.on(",").join(InnetUtils.getCurrAddress().getIp(), InnetUtils.getCurrAddress().getPort());
-                String master = receiveMsg.getMaster();
-                String msg
-                        = Joiner.on(":").join(sender, master, LogiClock.getLogiClock());
-                System.out.println(Joiner.on(" ").join(InnetUtils.getCurrAddress(),"send", msg));
-                SocketClient.sendMsg(socket, msg);
-            } else {
-                String sender = Joiner.on(":").join(InnetUtils.getCurrAddress().getIp(), InnetUtils.getCurrAddress().getPort());
-                String msg
-                        = Joiner.on(":").join(sender, sender, LogiClock.getLogiClock());
-                System.out.println(Joiner.on(" ").join(InnetUtils.getCurrAddress(),"send", msg));
-                SocketClient.sendMsg(socket, msg);
-            }
+
+        if (Math.abs(receiveMsg.getTimeClock() - LogiClock.getLogiClock()) <= distanceTimeExpend
+                && receiveMsg.getTimeClock() >= LogiClock.getLogiClock()) {
+            LogiClock.setLogiClock(receiveMsg.getTimeClock());
+            String sender
+                    = Joiner.on(",").join(InnetUtils.getCurrAddress().getIp(), InnetUtils.getCurrAddress().getPort());
+            String master = receiveMsg.getMaster();
+            String msg
+                    = Joiner.on(":").join(sender, master, LogiClock.getLogiClock());
+            System.out.println(Joiner.on(" ").join(InnetUtils.getCurrAddress(),"send", msg));
+            SocketClient.sendMsg(socket, msg);
+            QuorumVote.put(receiveMsg);
         } else {
             String sender = Joiner.on(",").join(InnetUtils.getCurrAddress().getIp(), InnetUtils.getCurrAddress().getPort());
             String msg
                     = Joiner.on(":").join(sender, sender, LogiClock.getLogiClock());
             System.out.println(Joiner.on(" ").join(InnetUtils.getCurrAddress(),"send", msg));
             SocketClient.sendMsg(socket, msg);
+            QuorumVote.put(SelectMasterModel.create(sender, sender, LogiClock.getLogiClock()));
         }
     }
 }

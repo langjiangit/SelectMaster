@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Created by xiejisheng on 18/4/20.
+ * 选主消息体
  */
 public class SelectMasterModel {
 
@@ -33,6 +34,24 @@ public class SelectMasterModel {
 
     public long getTimeClock() {
         return timeClock;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 0;
+        result = result*31 + sender.hashCode();
+        result = result*31 + master.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof SelectMasterModel)) {
+            return false;
+        }
+        SelectMasterModel other = (SelectMasterModel) obj;
+        return this.master.equals(other.master)
+                && this.sender.equals(other.sender);
     }
 
     @Override

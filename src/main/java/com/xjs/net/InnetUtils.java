@@ -13,4 +13,9 @@ public class InnetUtils {
         AddressModel master = FileUtils.getMaster();
         return null != master;
     }
+
+    public static AddressModel getMaster() {
+        AddressModel master = FileUtils.getMaster();
+        return master;
+    }
 }

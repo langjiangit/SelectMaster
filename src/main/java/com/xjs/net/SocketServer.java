@@ -1,5 +1,7 @@
 package com.xjs.net;
 
+import com.google.common.base.Joiner;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -12,7 +14,9 @@ public class SocketServer {
 
     public static void receive() {
         try {
+
             if (InnetUtils.isSelectedMaster()) {
+                System.out.println(Joiner.on("").join("master节点已选出：", InnetUtils.getMaster()));
                 System.exit(0);
             }
 
@@ -22,16 +26,17 @@ public class SocketServer {
                 while (true) {
                     try {
                         Socket accept = server.accept();
-//                    System.out.println("xxxxxx");
-//                    SocketClient.sendMsg(accept, "HTTP/1.1 200 OK\n\n\n <html>nihao</html>");
+                        if (QuorumVote.isSuccessVote()) {
+                            FileUtils.write(QuorumVote.getMaster().getMaster());
+                        }
                         new ServerHandler(accept).run();
                     } catch (Throwable t) {
                         System.out.println(t);
                     }
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Throwable t) {
+            System.out.println(t);
         }
     }
 }
