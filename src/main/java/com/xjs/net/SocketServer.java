@@ -3,6 +3,7 @@ package com.xjs.net;
 import com.google.common.base.Joiner;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -21,7 +22,10 @@ public class SocketServer {
             }
 
             AddressModel currAddress = InnetUtils.getCurrAddress();
-            ServerSocket server = new ServerSocket(currAddress.getPort());
+            ServerSocket server = new ServerSocket();
+            InetAddress inetAddress = server.getInetAddress();
+            System.out.println(Joiner.on(" ").join(inetAddress.getHostAddress(), server.getLocalPort()));
+            new Thread(SocketClient.register()).start();
             if (!Thread.interrupted()) {
                 while (true) {
                     try {

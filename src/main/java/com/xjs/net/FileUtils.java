@@ -27,6 +27,7 @@ public class FileUtils {
     private static final String OTHER_TWO = "other2_machine";
     private static final String SELECTED_MASTER = "selectedMaster";
     public static final String MACHINE_KEY = "machine";
+    public static final String BROAD_CAST = "broadCast";
 
     static {
 //        System.out.println(System.getProperty("java.class.path"));
@@ -96,5 +97,9 @@ public class FileUtils {
             System.out.println(FileUtils.class.getCanonicalName());
             t.printStackTrace();
         }
+    }
+
+    public static AddressModel getBroadCast() {
+        return machines.get(BROAD_CAST);
     }
 }
