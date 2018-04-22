@@ -3,8 +3,10 @@ package com.xjs.net;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
+import org.apache.commons.math3.analysis.function.Add;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -24,6 +26,7 @@ public class FileUtils {
     private static final String OTHER_ONE = "other1_machine";
     private static final String OTHER_TWO = "other2_machine";
     private static final String SELECTED_MASTER = "selectedMaster";
+    public static final String MACHINE_KEY = "machine";
 
     static {
 //        System.out.println(System.getProperty("java.class.path"));
@@ -56,7 +59,7 @@ public class FileUtils {
     public static int getMachinesNum() {
         int num = 0;
         for (String each : machines.keySet()) {
-            if (each.contains("machine"))
+            if (each.contains(MACHINE_KEY))
                 ++num;
         }
         return num;
@@ -64,7 +67,12 @@ public class FileUtils {
 
     public static List<AddressModel> getOtherAddress() {
 //        return ImmutableList.of(machines.get(OTHER_ONE), machines.get(OTHER_TWO));
-        return ImmutableList.of(machines.get(OTHER_ONE));
+        List<AddressModel> others = Lists.newArrayList();
+        for (String key : machines.keySet()) {
+            if (key.contains(MACHINE_KEY))
+                others.add(machines.get(key));
+        }
+        return others;
     }
 
     public static AddressModel getMaster() {

@@ -1,2 +1,3 @@
 curr_machine:127.0.0.1:8121
 other1_machine:127.0.0.1:8122
+other2_machine:127.0.0.1:8123
