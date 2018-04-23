@@ -1,10 +1,10 @@
 package com.xjs.net;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
  */
 public class NameServiceing implements Runnable {
 
-    private final List<AddressModel> machines = Lists.newCopyOnWriteArrayList();
+    private final List<AddressModel> registerMachines = Lists.newCopyOnWriteArrayList();
     ExecutorService es = Executors.newFixedThreadPool(1);
 
     public void run() {
@@ -28,12 +28,12 @@ public class NameServiceing implements Runnable {
     private void register() {
         AddressModel broadCast = FileUtils.getBroadCast();
         if (null == broadCast) {
-            throw new IllegalStateException("请设置服务注册地址，broadCast:ip:port");
+            throw new IllegalStateException("请设置服务注册地址，broadCast:{ip}:{port}");
         }
-        doMonitor(broadCast);
+        doRegister(broadCast);
     }
 
-    private void doMonitor(AddressModel broadCast) {
+    private void doRegister(AddressModel broadCast) {
         try {
             ServerSocket server = new ServerSocket(broadCast.getPort());
             while (true) {
@@ -52,14 +52,16 @@ public class NameServiceing implements Runnable {
 
     private void process(Socket accept) {
         try {
-            BufferedReader bufferedReader
-                    = new BufferedReader(new InputStreamReader(accept.getInputStream()));
-            String line = bufferedReader.readLine();
-            List<String> ipPort = Splitter.on(":").splitToList(line);
-            machines.add(AddressModel.create(ipPort.get(0), Integer.parseInt(ipPort.get(1))));
-            FileUtils.put();
+            String hostAddress = accept.getInetAddress().getHostAddress();
+            int port = accept.getPort();
+            registerMachines.add(AddressModel.create(hostAddress, port));
+            accept.close();
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
+
+    public List<AddressModel> getRegisterMachines() {
+        return ImmutableList.copyOf(registerMachines);
     }
 }

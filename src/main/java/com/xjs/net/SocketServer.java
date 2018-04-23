@@ -25,7 +25,11 @@ public class SocketServer {
             ServerSocket server = new ServerSocket();
             InetAddress inetAddress = server.getInetAddress();
             System.out.println(Joiner.on(" ").join(inetAddress.getHostAddress(), server.getLocalPort()));
-            new Thread(SocketClient.register()).start();
+            new Thread(new Runnable() {
+                public void run() {
+                    SocketClient.register();
+                }
+            }).start();
             if (!Thread.interrupted()) {
                 while (true) {
                     try {

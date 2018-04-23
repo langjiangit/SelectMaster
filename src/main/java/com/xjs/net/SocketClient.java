@@ -65,4 +65,8 @@ public class SocketClient {
         }
     }
 
+    public static void register() {
+        Socket socket = new Socket();
+
+    }
 }

@@ -13,7 +13,14 @@ import java.util.List;
  */
 public class ServerHandler implements Runnable {
 
-    final long distanceTimeExpend = 2000L;
+    /**
+     * 假设机器CPU的频率是a == 4GHZ=4*10^9
+     * 光速c == 3*10^8 光纤传输速度b == 2/3*c=2*10^8
+     * 局域网内，理论上机器X在w端口发送的消息到达机器Y的z端口的时间无限趋近于0
+     * a/b≈2*10,这个数字再放大，考虑机器X生成消息到机器Y解析消息
+     * 机器X差不多可以进行200个时钟周期，当然具体的值可以经过反复测量
+     */
+    final long distanceTimeExpend = 200L;
     private final Socket socket;
 
     public ServerHandler(Socket accept) {

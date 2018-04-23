@@ -2,11 +2,9 @@ package com.xjs.net;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
-import org.apache.commons.math3.analysis.function.Add;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -20,7 +18,7 @@ import java.util.Map;
  */
 public class FileUtils {
 
-    private static final String PROPERTIES_FILE = "select_master.prop";
+    private static final String PROPERTIES_FILE = "select_master.properties";
     private static final Map<String, AddressModel> machines = Maps.newHashMap();
     private static final String CURR = "curr_machine";
     private static final String OTHER_ONE = "other1_machine";
